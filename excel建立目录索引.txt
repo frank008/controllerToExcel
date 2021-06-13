@@ -1,0 +1,50 @@
+打开你要创建，目录的表格按Alt+F11在谈出的对话框中点插入选择模块然后把下面的代码复制到模块中
+视图-宏 执行这个宏方法
+=================================
+Sub mulu()
+On Error GoTo Tuichu
+Dim i As Integer
+Dim ShtCount As Integer
+Dim SelectionCell As Range
+
+ShtCount = Worksheets.Count
+If ShtCount = 0 Or ShtCount = 1 Then Exit Sub
+Application.ScreenUpdating = False
+For i = 1 To ShtCount
+If Sheets(i).Name = "目录" Then
+Sheets("目录").Move Before:=Sheets(1)
+End If
+Next i
+If Sheets(1).Name <> "目录" Then
+ShtCount = ShtCount + 1
+Sheets(1).Select
+Sheets.Add
+Sheets(1).Name = "目录"
+End If
+Sheets("目录").Select
+Columns("B:B").Delete Shift:=xlToLeft
+Application.StatusBar = "正在生成目录…………请等待！"
+For i = 2 To ShtCount
+ActiveSheet.Hyperlinks.Add Anchor:=Worksheets("目录").Cells(i, 2), Address:="", SubAddress:= _
+"'" & Sheets(i).Name & "'!R1C1", TextToDisplay:=Sheets(i).Name
+Next
+Sheets("目录").Select
+Columns("B:B").AutoFit
+Cells(1, 2) = "目录"
+Set SelectionCell = Worksheets("目录").Range("B1")
+With SelectionCell
+.HorizontalAlignment = xlDistributed
+.VerticalAlignment = xlCenter
+.AddIndent = True
+.Font.Bold = True
+.Interior.ColorIndex = 34
+End With
+Application.StatusBar = False
+Application.ScreenUpdating = True
+Tuichu:
+End Sub
+==========================
+先创建目录sheet  - 建立 sheet索引，=HYPERLINK("#"&G3&"!A1",G3)
+
+切换到其他 sheet ，右键选定全部工作表，选一个单元格，输入   =HYPERLINK("#目录!A1","返回目录")
+
